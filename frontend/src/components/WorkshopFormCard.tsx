@@ -1,0 +1,102 @@
+import { useState } from "react";
+import { type Workshop } from "../types/workshop";
+
+type Props = {
+  isEditing: boolean;
+  visible: boolean;
+  initialData?: Workshop | null;
+  onCancel: () => void;
+  onSubmit: (
+    name: string,
+    description: string,
+    category: string,
+    startDate: Date,
+  ) => void;
+};
+
+export const WorkshopFormCard = ({
+  isEditing,
+  visible,
+  initialData,
+  onCancel,
+  onSubmit,
+}: Props) => {
+  const [form, setForm] = useState({
+    name: initialData?.name ?? "",
+    description: initialData?.description ?? "",
+    category: initialData?.category ?? "",
+    startDate: initialData
+      ? initialData.startDate.toISOString().slice(0, 16)
+      : "",
+  });
+
+  return (
+    <div
+      className={`
+        overflow-hidden transition-all duration-300 space-y-4
+        ${visible ? "max-h-96 mt-4 opacity-100" : "max-h-0 opacity-0"}
+      `}
+    >
+      <div className="rounded-xl bg-white p-6 border shadow-sm space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold">
+            {isEditing ? "Editando taller" : "Creando taller"}
+          </h2>
+        </div>
+        <input
+          className="w-full border rounded px-3 py-2"
+          placeholder="Nombre del taller"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+
+        <textarea
+          className="w-full border rounded px-3 py-2"
+          placeholder="Descripción"
+          rows={3}
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+
+        <div className="flex gap-4">
+          <input
+            className="flex-1 border rounded px-3 py-2"
+            placeholder="Categoría"
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+          />
+
+          <input
+            type="datetime-local"
+            className="flex-1 border rounded px-3 py-2"
+            value={form.startDate}
+            onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+          />
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 rounded text-gray-600 hover:bg-gray-100"
+          >
+            Cancelar
+          </button>
+
+          <button
+            onClick={() =>
+              onSubmit(
+                form.name,
+                form.description,
+                form.category,
+                new Date(form.startDate),
+              )
+            }
+            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+          >
+            {initialData ? "Guardar cambios" : "Crear taller"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

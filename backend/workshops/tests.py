@@ -56,7 +56,7 @@ class WorkshopAPITest(APITestCase):
 
         response = self.client.get("/api/workshops/")
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
 
     def test_retrieve_workshop(self):
@@ -69,7 +69,7 @@ class WorkshopAPITest(APITestCase):
 
         response = self.client.get(f"/api/workshops/{workshop.pk}/")
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["name"], "Single Workshop")
 
     def test_update_workshop_name(self):
@@ -86,7 +86,7 @@ class WorkshopAPITest(APITestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["name"], "New Name")
 
     def test_delete_workshop(self):
@@ -99,7 +99,7 @@ class WorkshopAPITest(APITestCase):
 
         response = self.client.delete(f"/api/workshops/{workshop.pk}/")
 
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Workshop.objects.filter(id=workshop.pk).exists())
 
     def test_name_required(self):

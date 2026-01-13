@@ -15,7 +15,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-default-key")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["192.168.1.81"]
+ALLOWED_HOSTS = ["localhost", "192.168.1.81"]
 
 
 # Application definition
