@@ -1,114 +1,21 @@
-import { useEffect, useState } from "react";
-import type { Workshop } from "../types/workshop";
-import {
-  listWorkshops,
-  createWorkshop,
-  deleteWorkshop,
-  updateWorkshop,
-} from "../api/workshop";
-import { WorkshopCard } from "./WorkshopCard";
+import { useWorkshopsController } from "../hooks/useWorkshopsController";
 import { WorkshopFormCard } from "./WorkshopFormCard";
-import { AnimatePresence, motion } from "motion/react";
+import { EditableWorkshopCard } from "./EditableWorkshopCard";
+import { ConfirmDialog } from "./ConfirmDialog";
 
 export const WorkshopList = () => {
-  const [workshops, setWorkshops] = useState<Workshop[]>([]);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [editingWorkshop, setEditingWorkshop] = useState<Workshop | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const controller = useWorkshopsController();
 
-  const filteredWorkshops = workshops.filter((w) =>
-    w.category.toLowerCase().includes(categoryFilter.toLowerCase()),
-  );
-
-  useEffect(() => {
-    const fetchWorkshops = async () => {
-      try {
-        const data = await listWorkshops();
-        setWorkshops(data);
-      } catch {
-        setError("No se pudieron cargar los talleres.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWorkshops();
-  }, []);
-
-  const toggleExpanded = (id: number) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  };
-
-  const handleDelete = async (id: number) => {
-    await deleteWorkshop(id);
-    setWorkshops((prev) => prev.filter((w) => w.id !== id));
-  };
-
-  const startCreate = () => {
-    setEditingWorkshop(null);
-    setIsCreating(true);
-  };
-
-  const startEdit = (workshop: Workshop) => {
-    setEditingWorkshop(workshop);
-    setIsCreating(true);
-  };
-
-  const cancelEditing = () => {
-    setIsCreating(false);
-    setEditingWorkshop(null);
-  };
-
-  const handleCreate = async (
-    name: string,
-    description: string,
-    category: string,
-    startDate: Date,
-  ) => {
-    const newWorkshop = await createWorkshop(
-      name,
-      description,
-      category,
-      startDate,
-    );
-
-    setWorkshops((prev) => [newWorkshop, ...prev]);
-    cancelEditing();
-  };
-
-  const handleEdit = (workshopId: number) => {
-    // Se utiliza currying para inyectar la dependencia de workshopId sin duplicar funciones
-    const handleEditCurry = async (
-      name: string,
-      description: string,
-      category: string,
-      startDate: Date,
-    ) => {
-      const updated = await updateWorkshop(
-        workshopId,
-        name,
-        description,
-        category,
-        startDate,
-      );
-
-      setWorkshops((prev) =>
-        prev.map((w) => (w.id === workshopId ? updated : w)),
-      );
-      cancelEditing();
-    };
-    return handleEditCurry;
-  };
-
-  if (loading) {
+  if (controller.loading) {
     return <p className="text-center mt-8 text-lg">Cargando talleres...</p>;
   }
 
-  if (error) {
-    return <p className="text-center mt-8 text-red-600 text-lg">{error}</p>;
+  if (controller.error) {
+    return (
+      <p className="text-center mt-8 text-red-600 text-lg">
+        {controller.error}
+      </p>
+    );
   }
 
   return (
@@ -123,8 +30,8 @@ export const WorkshopList = () => {
             <input
               type="text"
               placeholder="Buscar por categoría..."
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              value={controller.categoryFilter}
+              onChange={(e) => controller.setCategoryFilter(e.target.value)}
               className="
                 border
                 rounded-lg
@@ -139,7 +46,7 @@ export const WorkshopList = () => {
 
             {/* Boton de crear */}
             <button
-              onClick={startCreate}
+              onClick={controller.startCreate}
               className="
                 flex items-center justify-center
                 w-10 h-10
@@ -154,6 +61,7 @@ export const WorkshopList = () => {
                 focus:outline-none
                 focus:ring-2
                 focus:ring-blue-400
+                cursor-pointer
               "
               title="Crear nuevo taller"
             >
@@ -162,57 +70,58 @@ export const WorkshopList = () => {
           </div>
         </div>
 
+        {/* Popup de confirmación */}
+        {controller.deletingWorkshop !== null ? (
+          <ConfirmDialog
+            open={controller.deletingWorkshop !== null}
+            variant="delete"
+            title="Eliminar taller"
+            description="¿Quieres eliminar este taller?"
+            onConfirm={() => {
+              if (controller.deletingWorkshop === null) return;
+              controller.handleDelete(controller.deletingWorkshop.id);
+              controller.setDeletingWorkshop(null);
+            }}
+            onCancel={() => controller.setDeletingWorkshop(null)}
+          />
+        ) : (
+          <ConfirmDialog
+            open={controller.pendingAction !== null}
+            variant="discard"
+            title="Descartar cambios"
+            description="Tienes cambios sin guardar. ¿Deseas descartarlos?"
+            onConfirm={controller.confirmPendingAction}
+            onCancel={controller.abortPendingAction}
+          />
+        )}
+
         {/* Card de creación */}
         <WorkshopFormCard
           isEditing={false}
-          visible={isCreating && editingWorkshop === null}
-          initialData={editingWorkshop}
-          onCancel={cancelEditing}
-          onSubmit={handleCreate}
+          visible={controller.isCreating && controller.editingWorkshop === null}
+          initialData={controller.editingWorkshop}
+          setIsDirty={controller.setIsDirty}
+          onCancel={controller.cancelEditing}
+          onSubmit={controller.handleCreate}
         />
 
         {/* Lista de talleres */}
-        {filteredWorkshops.map((workshop) => {
-          const isEditing = editingWorkshop?.id === workshop.id;
+        {controller.filteredWorkshops.map((workshop) => {
+          const isEditing = controller.editingWorkshop?.id === workshop.id;
 
           return (
-            <AnimatePresence key={workshop.id} mode="wait">
-              {isEditing ? (
-                <motion.div
-                  key="form"
-                  layout
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
-                  exit={{ scaleY: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <WorkshopFormCard
-                    isEditing={true}
-                    visible={isEditing}
-                    initialData={workshop}
-                    onCancel={cancelEditing}
-                    onSubmit={handleEdit(workshop.id)}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="card"
-                  layout
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
-                  exit={{ scaleY: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <WorkshopCard
-                    workshop={workshop}
-                    isExpanded={expandedId === workshop.id}
-                    onToggle={() => toggleExpanded(workshop.id)}
-                    onDelete={() => handleDelete(workshop.id)}
-                    onEdit={() => startEdit(workshop)}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <EditableWorkshopCard
+              workshop={workshop}
+              key={workshop.id}
+              isEditing={isEditing}
+              isExpanded={controller.expandedId === workshop.id}
+              setIsDirty={controller.setIsDirty}
+              onToggle={() => controller.toggleExpanded(workshop.id)}
+              onDelete={() => controller.setDeletingWorkshop(workshop)}
+              onEdit={() => controller.startEdit(workshop)}
+              onCancel={controller.cancelEditing}
+              onSubmit={controller.handleEdit(workshop.id)}
+            />
           );
         })}
       </div>

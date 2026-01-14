@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type Workshop } from "../types/workshop";
 
 type Props = {
   isEditing: boolean;
   visible: boolean;
   initialData?: Workshop | null;
+  setIsDirty: (isDirty: boolean) => void;
   onCancel: () => void;
   onSubmit: (
     name: string,
@@ -18,17 +19,36 @@ export const WorkshopFormCard = ({
   isEditing,
   visible,
   initialData,
+  setIsDirty,
   onCancel,
   onSubmit,
 }: Props) => {
-  const [form, setForm] = useState({
-    name: initialData?.name ?? "",
-    description: initialData?.description ?? "",
-    category: initialData?.category ?? "",
-    startDate: initialData
-      ? initialData.startDate.toISOString().slice(0, 16)
-      : "",
+  const buildForm = (data?: Workshop | null) => ({
+    name: data?.name ?? "",
+    description: data?.description ?? "",
+    category: data?.category ?? "",
+    startDate: data ? data.startDate.toISOString().slice(0, 16) : "",
   });
+
+  const [form, setForm] = useState(() => buildForm(initialData));
+  const initialFormRef = useRef(form);
+
+  useEffect(() => {
+    const isDirty =
+      form.name !== initialFormRef.current.name ||
+      form.description !== initialFormRef.current.description ||
+      form.category !== initialFormRef.current.category ||
+      form.startDate !== initialFormRef.current.startDate;
+
+    setIsDirty(isDirty);
+  }, [form, setIsDirty]);
+
+  useEffect(() => {
+    const nextForm = buildForm(initialData);
+    setForm(nextForm);
+    initialFormRef.current = nextForm;
+    setIsDirty(false);
+  }, [initialData, visible]);
 
   return (
     <div

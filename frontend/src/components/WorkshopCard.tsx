@@ -56,7 +56,7 @@ export const WorkshopCard = ({
 
     <div
       className={`
-        overflow-hidden transition-all duration-300
+        overflow-hidden transition-all duration-200
         ${isExpanded ? "max-h-96 mt-4 opacity-100" : "max-h-0 opacity-0"}
       `}
     >
@@ -64,6 +64,10 @@ export const WorkshopCard = ({
         <p>
           <strong>Fecha de inicio:</strong>{" "}
           {workshop.startDate.toLocaleString()}
+        </p>
+        <p>
+          <strong>Fecha de creación:</strong>{" "}
+          {workshop.createdAt.toLocaleString()}
         </p>
       </div>
     </div>
