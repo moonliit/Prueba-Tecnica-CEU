@@ -66,6 +66,7 @@ Esta aplicación cubre dichos requerimientos y añade mejoras orientadas a exper
 
 - Serialización y validación de datos.
 - Configuración de CORS para consumo desde el frontend.
+- Tests automatizados usando Django TestCase y Django REST Framework.
 
 ### Frontend
 
@@ -137,7 +138,27 @@ SECRET_KEY=django-insecure-secretkey
 
 Antes de ejecutar el servidor, asegúrate de haber creado el archivo `.env` con las variables indicadas en esta sección.
 
---
+---
+
+## Testing
+
+El backend incluye tests automatizados para modelos y la API REST.
+
+Los tests cubren, entre otros casos:
+
+- Creación, listado, actualización y eliminación de talleres
+- Validación de campos obligatorios (`name`, `category`, `start_date`)
+- Rechazo de fechas pasadas
+- Descripción opcional (`description`)
+- Filtro de talleres por categoría
+
+Para ejecutar los tests:
+
+```bash
+uv run python manage.py test
+```
+
+En la carpeta backend.
 
 ## Ejecución con Docker (Recomendado)
 
@@ -204,9 +225,9 @@ Los datos persistidos en la base de datos no se perderán mientras el archivo `d
 
 1. Acceder a la carpeta del backend:
 
-```bash
-   cd backend
-```
+   ```bash
+      cd backend
+   ```
 
 2. Instalar dependencias:
 
@@ -280,6 +301,4 @@ El backend sí admite variables de entorno mediante `.env` si se desea extender 
 ## Puntos Pendientes / Mejoras Futuras
 
 - Mejoras en la configuración Docker para entornos productivos.
-- Validaciones más estrictas en fechas pasadas.
-- Tests automatizados adicionales.
 - Despliegue en entorno productivo.

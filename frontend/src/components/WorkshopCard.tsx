@@ -23,7 +23,11 @@ export const WorkshopCard = ({
     <div className="flex justify-between gap-4">
       <div>
         <h2 className="text-xl font-semibold">{workshop.name}</h2>
-        <p className="text-gray-600 mt-1">{workshop.description}</p>
+        {workshop.description ? (
+          <p className="text-gray-600 mt-1">{workshop.description}</p>
+        ) : (
+          <p className="mt-1 italic text-gray-400">Sin descripción</p>
+        )}
       </div>
 
       <div className="flex flex-col items-end gap-2">

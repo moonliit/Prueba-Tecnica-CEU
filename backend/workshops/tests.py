@@ -115,6 +115,18 @@ class WorkshopAPITest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("name", response.json())
 
+    def test_description_optional(self):
+        data = {
+            "name": "No Description Workshop",
+            "start_date": (timezone.now() + timedelta(days=1)).isoformat(),
+            "category": "Dev",
+        }
+
+        response = self.client.post("/api/talleres/", data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.json()["description"], "")
+
     def test_category_required(self):
         data = {
             "name": "Missing category",
@@ -152,6 +164,40 @@ class WorkshopAPITest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("start_date", response.json())
+
+    def test_cannot_update_workshop_with_past_date(self):
+        workshop = Workshop.objects.create(
+            name="Future Workshop",
+            description="Desc",
+            start_date=timezone.now() + timedelta(days=2),
+            category="Dev",
+        )
+
+        response = self.client.patch(
+            f"/api/talleres/{workshop.pk}/",
+            {"start_date": (timezone.now() - timedelta(days=1)).isoformat()},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("start_date", response.json())
+
+    def test_update_workshop_clear_description(self):
+        workshop = Workshop.objects.create(
+            name="With description",
+            description="Some text",
+            start_date=timezone.now() + timedelta(days=1),
+            category="Dev",
+        )
+
+        response = self.client.patch(
+            f"/api/talleres/{workshop.pk}/",
+            {"description": ""},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["description"], "")
 
     def test_filter_workshops_by_category(self):
         Workshop.objects.create(
