@@ -135,11 +135,70 @@ SECRET_KEY=django-insecure-secretkey
 
 ```
 
+Antes de ejecutar el servidor, asegúrate de haber creado el archivo `.env` con las variables indicadas en esta sección.
+
+--
+
+## Ejecución con Docker (Recomendado)
+
+El proyecto incluye configuración para ejecutarse mediante **Docker y Docker Compose**, permitiendo levantar el backend y el frontend sin instalar dependencias locales.
+
+### Requisitos
+
+- Docker
+- Docker Compose (v2 o superior)
+
 ---
 
-## Instalación y Ejecución
+### Construcción de imágenes
 
-Antes de ejecutar el servidor, asegúrate de haber creado el archivo `.env` con las variables indicadas en la sección anterior.
+Desde la raíz del proyecto, ejecutar:
+
+```bash
+docker compose build --no-cache
+```
+
+Este comando construye las imágenes del backend y frontend asegurando una instalación limpia de dependencias.
+
+---
+
+### Ejecución de la aplicación
+
+Para levantar todos los servicios:
+
+```bash
+docker compose up -d
+```
+
+Los servicios quedarán disponibles en:
+
+- Backend (API):
+  [http://localhost:8000](http://localhost:8000)
+
+- Frontend (SPA):
+  [http://localhost:5173](http://localhost:5173)
+
+---
+
+### Persistencia de datos (SQLite)
+
+El backend utiliza **SQLite** como base de datos.
+El archivo `db.sqlite3` se monta como volumen, lo que garantiza que los datos **persistan entre reinicios del contenedor**.
+El archivo `db.sqlite3` se encuentra en la carpeta `backend/`.
+
+---
+
+### Detener los contenedores
+
+Para detener la aplicación:
+
+```bash
+docker compose down
+```
+
+Los datos persistidos en la base de datos no se perderán mientras el archivo `db.sqlite3` se mantenga.
+
+## Instalación y ejecución manual
 
 ### Backend
 
@@ -218,19 +277,9 @@ El backend sí admite variables de entorno mediante `.env` si se desea extender 
 
 ---
 
-## Manejo de Git
-
-El desarrollo se realizó utilizando commits incrementales y descriptivos, por ejemplo:
-
-- Initial backend implementation (models, API, tests)
-- Initial frontend implementation (CRUD, filtering)
-- Improved frontend animations and confirm dialogs
-
----
-
 ## Puntos Pendientes / Mejoras Futuras
 
-- Dockerización del proyecto (Dockerfile / docker-compose).
+- Mejoras en la configuración Docker para entornos productivos.
 - Validaciones más estrictas en fechas pasadas.
 - Tests automatizados adicionales.
 - Despliegue en entorno productivo.

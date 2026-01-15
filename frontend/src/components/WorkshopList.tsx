@@ -81,38 +81,46 @@ export const WorkshopList = () => {
           )}
 
           {/* Lista de talleres */}
-          {controller.filteredWorkshops.map((workshop) => {
-            const isEditing = controller.editingWorkshop?.id === workshop.id;
-            const isFocused =
-              isJustFocused && controller.lastEditedId == workshop.id;
+          {controller.filteredWorkshops.length > 0 ? (
+            controller.filteredWorkshops.map((workshop) => {
+              const isEditing = controller.editingWorkshop?.id === workshop.id;
+              const isFocused =
+                isJustFocused && controller.lastEditedId == workshop.id;
 
-            return (
-              <div
-                key={workshop.id}
-                ref={(el) => {
-                  workshopRefs.current[workshop.id] = el;
-                }}
-                tabIndex={-1}
-                className={clsx(
-                  "relative rounded-xl transition-shadow",
-                  isFocused &&
-                    "ring-4 ring-blue-400/40 shadow-lg shadow-blue-500/20",
-                )}
-              >
-                <EditableWorkshopCard
-                  workshop={workshop}
-                  isEditing={isEditing}
-                  isExpanded={controller.expandedId === workshop.id}
-                  setIsDirty={controller.setIsDirty}
-                  onToggle={() => controller.toggleExpanded(workshop.id)}
-                  onDelete={() => controller.setDeletingWorkshop(workshop)}
-                  onEdit={() => controller.startEdit(workshop)}
-                  onCancel={controller.cancelEditing}
-                  onSubmit={controller.handleEdit(workshop.id)}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={workshop.id}
+                  ref={(el) => {
+                    workshopRefs.current[workshop.id] = el;
+                  }}
+                  tabIndex={-1}
+                  className={clsx(
+                    "relative rounded-xl transition-shadow",
+                    isFocused &&
+                      "ring-4 ring-blue-400/40 shadow-lg shadow-blue-500/20",
+                  )}
+                >
+                  <EditableWorkshopCard
+                    workshop={workshop}
+                    isEditing={isEditing}
+                    isExpanded={controller.expandedId === workshop.id}
+                    setIsDirty={controller.setIsDirty}
+                    onToggle={() => controller.toggleExpanded(workshop.id)}
+                    onDelete={() => controller.setDeletingWorkshop(workshop)}
+                    onEdit={() => controller.startEdit(workshop)}
+                    onCancel={controller.cancelEditing}
+                    onSubmit={controller.handleEdit(workshop.id)}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <div className="flex items-center justify-center rounded-xl bg-gray-50 py-16">
+              <span className="text-sm font-medium tracking-wide text-gray-500 uppercase">
+                No hay talleres que mostrar
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
