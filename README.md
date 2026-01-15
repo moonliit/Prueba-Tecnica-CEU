@@ -226,7 +226,7 @@ Los datos persistidos en la base de datos no se perderán mientras el archivo `d
 1. Acceder a la carpeta del backend:
 
    ```bash
-      cd backend
+   cd backend
    ```
 
 2. Instalar dependencias:
