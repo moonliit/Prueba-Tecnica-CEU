@@ -21,6 +21,7 @@ export const useWorkshopsController = () => {
     null,
   );
   const [isCreating, setIsCreating] = useState(false);
+  const [lastEditedId, setLastEditedId] = useState<number | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -68,6 +69,7 @@ export const useWorkshopsController = () => {
     setIsCreating(false);
     setEditingWorkshop(null);
     setWorkshops((prev) => [...prev, newWorkshop]);
+    setLastEditedId(newWorkshop.id);
   };
 
   // edit (curried)
@@ -94,6 +96,7 @@ export const useWorkshopsController = () => {
       setWorkshops((prev) =>
         prev.map((w) => (w.id === workshopId ? updated : w)),
       );
+      setLastEditedId(updated.id);
     };
     return handleEditCurry;
   };
@@ -176,6 +179,8 @@ export const useWorkshopsController = () => {
     deletingWorkshop,
     setDeletingWorkshop,
     isCreating,
+    lastEditedId,
+    setLastEditedId,
     isDirty,
     setIsDirty,
     pendingAction,

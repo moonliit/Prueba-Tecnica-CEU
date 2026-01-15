@@ -41,7 +41,7 @@ class WorkshopAPITest(APITestCase):
             "category": "Development",
         }
 
-        response = self.client.post("/api/workshops/", data, format="json")
+        response = self.client.post("/api/talleres/", data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.json()["name"], "API Workshop")
@@ -54,7 +54,7 @@ class WorkshopAPITest(APITestCase):
             category="Development",
         )
 
-        response = self.client.get("/api/workshops/")
+        response = self.client.get("/api/talleres/")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
@@ -67,7 +67,7 @@ class WorkshopAPITest(APITestCase):
             category="Data",
         )
 
-        response = self.client.get(f"/api/workshops/{workshop.pk}/")
+        response = self.client.get(f"/api/talleres/{workshop.pk}/")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["name"], "Single Workshop")
@@ -81,7 +81,7 @@ class WorkshopAPITest(APITestCase):
         )
 
         response = self.client.patch(
-            f"/api/workshops/{workshop.pk}/",
+            f"/api/talleres/{workshop.pk}/",
             {"name": "New Name"},
             format="json",
         )
@@ -97,7 +97,7 @@ class WorkshopAPITest(APITestCase):
             category="Dev",
         )
 
-        response = self.client.delete(f"/api/workshops/{workshop.pk}/")
+        response = self.client.delete(f"/api/talleres/{workshop.pk}/")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Workshop.objects.filter(id=workshop.pk).exists())
@@ -110,7 +110,7 @@ class WorkshopAPITest(APITestCase):
             "category": "Dev",
         }
 
-        response = self.client.post("/api/workshops/", data, format="json")
+        response = self.client.post("/api/talleres/", data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("name", response.json())
@@ -123,7 +123,7 @@ class WorkshopAPITest(APITestCase):
             "category": "",
         }
 
-        response = self.client.post("/api/workshops/", data, format="json")
+        response = self.client.post("/api/talleres/", data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("category", response.json())
@@ -135,7 +135,7 @@ class WorkshopAPITest(APITestCase):
             "category": "Dev",
         }
 
-        response = self.client.post("/api/workshops/", data, format="json")
+        response = self.client.post("/api/talleres/", data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("start_date", response.json())
@@ -148,7 +148,7 @@ class WorkshopAPITest(APITestCase):
             "category": "Development",
         }
 
-        response = self.client.post("/api/workshops/", data, format="json")
+        response = self.client.post("/api/talleres/", data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("start_date", response.json())
@@ -167,7 +167,7 @@ class WorkshopAPITest(APITestCase):
             category="Design",
         )
 
-        response = self.client.get("/api/workshops/?category=Design")
+        response = self.client.get("/api/talleres/?category=Design")
 
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0]["category"], "Design")

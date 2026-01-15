@@ -97,7 +97,7 @@ export const WorkshopFormCard = ({
         <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded text-gray-600 hover:bg-gray-100"
+            className="px-4 py-2 rounded text-gray-600 cursor-pointer hover:bg-gray-100"
           >
             Cancelar
           </button>
@@ -111,7 +111,7 @@ export const WorkshopFormCard = ({
                 new Date(form.startDate),
               )
             }
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+            className="px-4 py-2 rounded bg-blue-600 text-white cursor-pointer hover:bg-blue-700"
           >
             {initialData ? "Guardar cambios" : "Crear taller"}
           </button>

@@ -19,6 +19,7 @@ export const WorkshopCard = ({
     onClick={onToggle}
     className="cursor-pointer rounded-xl bg-white p-6 border transition hover:shadow-lg"
   >
+    {/* Información inicial */}
     <div className="flex justify-between gap-4">
       <div>
         <h2 className="text-xl font-semibold">{workshop.name}</h2>
@@ -54,6 +55,7 @@ export const WorkshopCard = ({
       </div>
     </div>
 
+    {/* Información expandida */}
     <div
       className={`
         overflow-hidden transition-all duration-200
@@ -61,6 +63,9 @@ export const WorkshopCard = ({
       `}
     >
       <div className="pt-4 border-t text-gray-700 text-sm">
+        <p>
+          <strong>ID:</strong> {workshop.id}
+        </p>
         <p>
           <strong>Fecha de inicio:</strong>{" "}
           {workshop.startDate.toLocaleString()}
